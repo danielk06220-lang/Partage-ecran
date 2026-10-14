@@ -28,6 +28,10 @@ video{width:100%;background:#020617;border-radius:10px;margin-top:12px;max-heigh
     <h1>Partage d'écran privé</h1>
     <p>Crée un lien, envoie-le à ta sœur et regarde son écran en direct.</p>
     <div id="status" class="status">Prêt.</div>
+    <button id="diagnosticBtn" class="secondary">Vérifier la compatibilité</button>
+    <div id="diagnosticResult" class="status" style="margin-top:10px">
+      Appuie sur le bouton pour tester ton navigateur.
+    </div>
   </section>
 
   <section id="home" class="card">
@@ -45,7 +49,7 @@ video{width:100%;background:#020617;border-radius:10px;margin-top:12px;max-heigh
 
   <section id="sharePanel" class="card hidden">
     <h2>Partager mon écran</h2>
-    <p>Appuie ci-dessous, puis confirme le partage dans la fenêtre de ton navigateur.</p>
+    <p>Appuie ci-dessous, puis confirme le partage si le navigateur le permet.</p>
     <button id="startShare">Autoriser et partager mon écran</button>
     <button id="stopShare" class="secondary">Arrêter le partage</button>
     <video id="localVideo" autoplay muted playsinline></video>
@@ -57,7 +61,7 @@ video{width:100%;background:#020617;border-radius:10px;margin-top:12px;max-heigh
     <button id="connectBtn">Se connecter au partage</button>
   </section>
 
-  <p class="small">Le partage ne démarre qu'après autorisation de la personne qui partage. La compatibilité dépend du navigateur et de l'appareil.</p>
+  <p class="small">Le partage nécessite un navigateur compatible et l'autorisation de la personne qui partage.</p>
 </main>
 
 <script>
@@ -82,6 +86,21 @@ let busy = false;
 function status(message, error = false) {
   $("status").textContent = message;
   $("status").style.color = error ? "#fca5a5" : "#cbd5e1";
+}
+
+function runDiagnostic() {
+  const secure = window.isSecureContext;
+  const media = navigator.mediaDevices;
+  const capture = typeof media?.getDisplayMedia === "function";
+  const camera = typeof media?.getUserMedia === "function";
+  const rtc = typeof window.RTCPeerConnection === "function";
+
+  $("diagnosticResult").textContent =
+    "Connexion sécurisée : " + (secure ? "oui" : "non") +
+    "\nCapture d'écran : " + (capture ? "fonction disponible" : "non disponible") +
+    "\nAccès média : " + (camera ? "disponible" : "non disponible") +
+    "\nWebRTC : " + (rtc ? "disponible" : "non disponible") +
+    "\nNavigateur : " + navigator.userAgent;
 }
 
 function headers() {
@@ -251,7 +270,7 @@ async function startSharing() {
 
   try {
     if (!navigator.mediaDevices?.getDisplayMedia) {
-      throw new Error("Ce navigateur ne prend pas en charge le partage d'écran. Essaie depuis un ordinateur avec un navigateur compatible.");
+      throw new Error("La capture d'écran n'est pas disponible dans ce navigateur. Le code de la page ne peut pas activer cette fonction.");
     }
 
     status("Demande d'autorisation…");
@@ -382,6 +401,7 @@ function openSession(href) {
   }
 }
 
+$("diagnosticBtn").addEventListener("click", runDiagnostic);
 $("createBtn").addEventListener("click", createSession);
 $("copyShare").addEventListener("click", () => copyText($("shareLink").textContent));
 $("copyView").addEventListener("click", () => copyText($("viewLink").textContent));
