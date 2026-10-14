@@ -2,573 +2,673 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101827">
-<title>Partage d'écran privé</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>Partage d'écran privé</title>
 
-<style>
-* { box-sizing: border-box; }
+  <style>
+    * { box-sizing: border-box; }
 
-body {
-  margin: 0;
-  padding: 18px;
-  background: #101827;
-  color: #f8fafc;
-  font-family: Arial, sans-serif;
-}
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #0b1120;
+      color: #f8fafc;
+    }
 
-main {
-  max-width: 650px;
-  margin: 15px auto;
-  padding: 22px;
-  background: #1e293b;
-  border-radius: 18px;
-}
+    main {
+      width: min(720px, 100%);
+      margin: auto;
+      padding: 24px 16px 40px;
+    }
 
-h1 { color: #60a5fa; }
-p { line-height: 1.6; color: #cbd5e1; }
+    .card {
+      background: #151e30;
+      border: 1px solid #29364c;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
 
-label {
-  display: block;
-  margin: 18px 0 8px;
-}
+    h1 { font-size: 27px; margin: 0 0 10px; }
+    h2 { font-size: 19px; margin-top: 0; }
+    p { color: #cbd5e1; line-height: 1.5; }
 
-input {
-  width: 100%;
-  padding: 13px;
-  border-radius: 8px;
-  border: 1px solid #475569;
-  background: #0f172a;
-  color: white;
-}
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 10px;
+      background: #3b82f6;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-button {
-  width: 100%;
-  margin-top: 12px;
-  padding: 14px;
-  border: 0;
-  border-radius: 9px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
+    button.secondary { background: #334155; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
 
-button:disabled { opacity: .5; }
-.primary { background: #2563eb; color: white; }
-.secondary { background: #334155; color: white; }
-.stop { background: #dc2626; color: white; }
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #475569;
+      border-radius: 9px;
+      background: #0b1120;
+      color: white;
+      margin-top: 8px;
+      font-size: 15px;
+    }
 
-#accept {
-  min-height: 68px;
-  font-size: 19px;
-  background: #16a34a;
-  color: white;
-}
+    video {
+      width: 100%;
+      display: block;
+      background: #020617;
+      border-radius: 12px;
+      margin-top: 12px;
+      min-height: 180px;
+      max-height: 65vh;
+    }
 
-video {
-  display: block;
-  width: 100%;
-  margin-top: 16px;
-  background: #000;
-  border-radius: 10px;
-}
+    .status {
+      border-radius: 10px;
+      padding: 12px;
+      background: #0b1120;
+      color: #cbd5e1;
+      overflow-wrap: anywhere;
+      line-height: 1.5;
+    }
 
-#status {
-  padding: 12px;
-  background: #0f172a;
-  border-radius: 8px;
-  overflow-wrap: anywhere;
-}
-
-.small { font-size: 13px; }
-.hidden { display: none !important; }
-</style>
+    .hidden { display: none !important; }
+    .small { font-size: 13px; color: #94a3b8; }
+    .linkbox { overflow-wrap: anywhere; font-size: 13px; }
+    .green { color: #86efac; }
+    .red { color: #fca5a5; }
+  </style>
 </head>
 
 <body>
 <main>
-  <h1 id="heading">Partage d'écran privé</h1>
-
-  <p id="intro">
-    Crée un lien privé pour démarrer une session avec une personne
-    de confiance.
-  </p>
-
-  <section id="creatorPanel">
-    <button class="primary" id="create">
-      Créer un lien privé
-    </button>
-
-    <label for="shareLink">Lien privé à envoyer</label>
-    <input id="shareLink" readonly
-           placeholder="Le lien apparaîtra ici">
-
-    <button class="secondary" id="copy" disabled>
-      Copier le lien
-    </button>
-
-    <button class="secondary" id="check">
-      Tester la connexion Supabase
-    </button>
-
-    <h3>Écran reçu</h3>
-    <video id="remoteVideo" autoplay playsinline controls></video>
-  </section>
-
-  <section id="sharePanel" class="hidden">
+  <section class="card">
+    <h1>Partage d'écran privé</h1>
     <p>
-      Tu es sur la page de partage. En appuyant sur le bouton,
-      tu demandes à ton navigateur de partager ton écran.
-      Tu peux refuser ou arrêter à tout moment.
+      Crée une session, ouvre le lien de partage sur l'appareil
+      dont tu veux partager l'écran et le lien de visionnage sur
+      l'autre appareil.
     </p>
-
-    <button id="accept">
-      Accepter et partager mon écran
-    </button>
+    <div id="status" class="status">Prêt.</div>
   </section>
 
-  <button class="stop" id="stop" disabled>
-    Arrêter la connexion
-  </button>
+  <section id="home" class="card">
+    <h2>1. Créer une session</h2>
+    <p>Crée deux liens distincts : un pour partager l'écran et un pour le regarder.</p>
+    <button id="createBtn">Créer une session privée</button>
 
-  <details id="localDetails" class="hidden">
-    <summary>Aperçu local du partage</summary>
+    <div id="links" class="hidden">
+      <p><strong>Lien pour partager l'écran</strong></p>
+      <div id="shareLink" class="status linkbox"></div>
+      <button id="copyShareBtn" class="secondary">Copier le lien de partage</button>
+
+      <p><strong>Lien pour regarder l'écran</strong></p>
+      <div id="viewLink" class="status linkbox"></div>
+      <button id="copyViewBtn" class="secondary">Copier le lien de visionnage</button>
+    </div>
+  </section>
+
+  <section id="sharePanel" class="card hidden">
+    <h2>2. Partager cet écran</h2>
+    <p>
+      Appuie sur le bouton puis choisis l'écran, la fenêtre ou l'onglet
+      que le navigateur te propose de partager.
+    </p>
+    <button id="startShareBtn">Démarrer le partage d'écran</button>
+    <button id="stopShareBtn" class="secondary">Arrêter le partage</button>
     <video id="localVideo" autoplay muted playsinline></video>
-  </details>
+  </section>
 
-  <p id="status" role="status" aria-live="polite">
-    Prêt. Aucun écran n'est partagé.
-  </p>
+  <section id="viewPanel" class="card hidden">
+    <h2>3. Regarder l'écran partagé</h2>
+    <p>Garde cette page ouverte pendant la session.</p>
+    <video id="remoteVideo" autoplay playsinline controls></video>
+    <button id="connectBtn">Se connecter au partage</button>
+  </section>
+
+  <section id="manualPanel" class="card">
+    <h2>Rejoindre une session</h2>
+    <p>Si tu as reçu un lien complet, ouvre-le directement dans le navigateur.</p>
+    <label for="sessionUrl">Ou colle ici le lien reçu :</label>
+    <input id="sessionUrl" type="url" placeholder="https://.../#role=view&id=...&code=...">
+    <button id="openSessionBtn" class="secondary">Ouvrir cette session</button>
+  </section>
 
   <p class="small">
-    Le lien est privé : transmets-le uniquement à la personne
-    concernée. La capture d'écran nécessite son autorisation.
+    La connexion dépend du navigateur, des autorisations de partage d'écran
+    et de la disponibilité du réseau. Ne partage pas un écran contenant
+    des informations confidentielles.
   </p>
 </main>
 
 <script>
 "use strict";
 
-const SUPABASE_URL =
-  "https://zaaqzngysplejdyutufj.supabase.co";
+/* CONFIGURATION SUPABASE */
+const SUPABASE_URL = "https://zaaqzngysplejdyutufj.supabase.co";
 
-const SUPABASE_ANON_KEY =
-  "sb_publishable_xm_amd25LgQ0CKP8XABtBQ_13EFxUP_";
+/* Clé publique Supabase : ce n'est PAS la service_role. */
+const SUPABASE_ANON_KEY = "sb_publishable_xm_amd25LgQ0CKP8XABtBQ_13EFxUP_";
 
-const $ = id => document.getElementById(id);
+/* Fonction Supabase qui fournit les serveurs TURN.
+   La clé API Metered reste dans le secret Supabase METERED_API_KEY. */
+const TURN_FUNCTION_URL =
+  SUPABASE_URL + "/functions/v1/metered-ice";
 
-const creatorPanel = $("creatorPanel");
-const sharePanel = $("sharePanel");
-const createButton = $("create");
-const copyButton = $("copy");
-const checkButton = $("check");
-const acceptButton = $("accept");
-const stopButton = $("stop");
-const shareLink = $("shareLink");
-const localVideo = $("localVideo");
-const remoteVideo = $("remoteVideo");
-const localDetails = $("localDetails");
+const $ = (id) => document.getElementById(id);
 
-let role = "view";
 let sessionId = null;
 let sessionCode = null;
 let peer = null;
 let localStream = null;
-let pollTimer = null;
-let polling = false;
-let offerHandled = false;
-let answerApplied = false;
+let role = null;
+let pollingTimer = null;
 let seenCandidates = new Set();
-let stopped = false;
+let makingOffer = false;
+let processingAnswer = false;
+let remoteDescriptionReady = false;
+let pendingCandidates = [];
 
-function setStatus(message) {
+function setStatus(message, error = false) {
   $("status").textContent = message;
+  $("status").className = "status" + (error ? " red" : "");
 }
 
-async function rpc(name, parameters = {}) {
+function headers() {
+  return {
+    "apikey": SUPABASE_ANON_KEY,
+    "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+    "Content-Type": "application/json"
+  };
+}
+
+async function supabaseRpc(name, body = {}) {
   const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/rpc/${name}`,
+    SUPABASE_URL + "/rest/v1/rpc/" + name,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-      },
-      body: JSON.stringify(parameters)
+      headers: headers(),
+      body: JSON.stringify(body)
     }
   );
 
   const text = await response.text();
 
   if (!response.ok) {
-    throw new Error(
-      `Supabase (${response.status}) : ${text.slice(0, 250)}`
-    );
+    throw new Error(name + " : " + response.status + " — " + text);
   }
 
   if (!text) return null;
 
-  return JSON.parse(text);
+  try { return JSON.parse(text); }
+  catch { return text; }
 }
 
-function readPrivateLink() {
+function unwrap(value) {
+  if (Array.isArray(value)) return value[0] ?? null;
+  return value;
+}
+
+function buildLink(linkRole) {
+  const url = new URL(window.location.href);
+  url.hash = new URLSearchParams({
+    role: linkRole,
+    id: sessionId,
+    code: sessionCode
+  }).toString();
+  return url.toString();
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    setStatus("Lien copié.");
+  } catch {
+    window.prompt("Copie ce lien :", text);
+  }
+}
+
+function readHash() {
   const params = new URLSearchParams(
-    location.hash.replace(/^#/, "")
+    window.location.hash.replace(/^#/, "")
   );
 
-  const id = params.get("id");
-  const code = params.get("code");
-
-  if (
-    params.get("role") !== "share" ||
-    !id || !code ||
-    !/^[0-9a-f-]{36}$/i.test(id) ||
-    !/^[0-9a-f-]{36}$/i.test(code)
-  ) {
-    return false;
-  }
-
-  sessionId = id;
-  sessionCode = code;
-  role = "share";
-
-  creatorPanel.classList.add("hidden");
-  sharePanel.classList.remove("hidden");
-  localDetails.classList.remove("hidden");
-
-  $("heading").textContent = "Partager mon écran";
-  $("intro").textContent =
-    "Vérifie que ce lien provient d'une personne de confiance.";
-
-  acceptButton.disabled = false;
-  return true;
+  return {
+    role: params.get("role"),
+    id: params.get("id"),
+    code: params.get("code")
+  };
 }
 
-async function testSupabase() {
-  checkButton.disabled = true;
-  setStatus("Test de connexion Supabase...");
-
-  try {
-    await rpc("verifier_session_partage", {
-      p_id: "00000000-0000-4000-8000-000000000000",
-      p_code: "00000000-0000-4000-8000-000000000000"
-    });
-
-    setStatus("Connexion Supabase réussie. Aucune session créée.");
-  } catch (error) {
-    setStatus("Test échoué : " + error.message);
-  } finally {
-    checkButton.disabled = false;
-  }
+function showRole(newRole) {
+  role = newRole;
+  $("home").classList.toggle("hidden", !!newRole);
+  $("manualPanel").classList.toggle("hidden", !!newRole);
+  $("sharePanel").classList.toggle("hidden", newRole !== "share");
+  $("viewPanel").classList.toggle("hidden", newRole !== "view");
 }
 
 async function createSession() {
-  createButton.disabled = true;
-  setStatus("Création du lien privé...");
+  $("createBtn").disabled = true;
+  setStatus("Création de la session…");
 
   try {
-    const result = await rpc("creer_demande_partage_lien");
+    const result = unwrap(await supabaseRpc("creer_demande_partage_lien"));
 
     if (!result || !result.id || !result.code) {
-      throw new Error("Identifiant ou code absent dans la réponse.");
+      throw new Error(
+        "La fonction n'a pas renvoyé les champs id et code. Vérifie sa réponse dans Supabase."
+      );
     }
 
     sessionId = result.id;
     sessionCode = result.code;
-    role = "view";
 
-    const link = new URL(location.href);
-    link.hash = new URLSearchParams({
-      role: "share",
-      id: sessionId,
-      code: sessionCode
-    }).toString();
+    const shareUrl = buildLink("share");
+    const viewUrl = buildLink("view");
 
-    shareLink.value = link.href;
-    copyButton.disabled = false;
+    $("shareLink").textContent = shareUrl;
+    $("viewLink").textContent = viewUrl;
+    $("links").classList.remove("hidden");
 
-    await setupPeer();
-    startPolling();
-
-    setStatus(
-      "Lien créé. Envoie-le à la personne qui doit partager son écran."
-    );
+    setStatus("Session créée. Envoie chaque lien à l'appareil correspondant.");
   } catch (error) {
-    createButton.disabled = false;
-    setStatus("Erreur lors de la création : " + error.message);
+    setStatus("Impossible de créer la session : " + error.message, true);
+  } finally {
+    $("createBtn").disabled = false;
   }
 }
 
-async function copySessionLink() {
-  if (!shareLink.value) return;
+async function getIceServers() {
+  const response = await fetch(TURN_FUNCTION_URL, {
+    method: "GET",
+    headers: headers(),
+    cache: "no-store"
+  });
 
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(shareLink.value);
-    } else {
-      shareLink.focus();
-      shareLink.select();
+  const body = await response.text();
 
-      if (!document.execCommand("copy")) {
-        throw new Error("Copie automatique indisponible.");
-      }
-    }
-
-    setStatus("Lien copié. Envoie-le en privé.");
-  } catch {
-    shareLink.focus();
-    shareLink.select();
-    setStatus("Sélectionne le lien, puis appuie sur Copier.");
+  if (!response.ok) {
+    throw new Error(
+      "La fonction TURN répond " + response.status + " : " + body
+    );
   }
+
+  let data;
+  try {
+    data = JSON.parse(body);
+  } catch {
+    throw new Error("La fonction TURN n'a pas renvoyé du JSON valide.");
+  }
+
+  /* Accepte une liste de serveurs ou un objet contenant iceServers. */
+  const servers = Array.isArray(data)
+    ? data
+    : (data.iceServers || data.ice_servers || []);
+
+  if (!Array.isArray(servers) || servers.length === 0) {
+    throw new Error("Aucun serveur ICE reçu de la fonction TURN.");
+  }
+
+  return servers;
 }
 
 async function setupPeer() {
-  if (peer) return;
+  if (peer) {
+    peer.close();
+    peer = null;
+  }
+
+  setStatus("Chargement des serveurs de connexion…");
+
+  const iceServers = await getIceServers();
 
   peer = new RTCPeerConnection({
-    iceServers: [
-      { urls: "stun:stun.l.google.com:19302" }
-    ]
+    iceServers,
+    iceCandidatePoolSize: 4
   });
 
-  peer.onicecandidate = async event => {
+  peer.onicecandidate = async (event) => {
     if (!event.candidate || !sessionId || !sessionCode) return;
 
     try {
-      await rpc("ajouter_candidat_ice", {
+      await supabaseRpc("ajouter_candidat_ice", {
         p_id: sessionId,
         p_code: sessionCode,
         p_candidat: {
-          side: role,
+          role: role,
           candidate: event.candidate.toJSON()
         }
       });
     } catch (error) {
-      setStatus("Erreur réseau : " + error.message);
-    }
-  };
-
-  peer.ontrack = event => {
-    if (event.streams && event.streams[0]) {
-      remoteVideo.srcObject = event.streams[0];
-      remoteVideo.play().catch(() => {});
-      setStatus("Flux vidéo reçu. Connexion en cours...");
+      console.error("Envoi du candidat ICE :", error);
     }
   };
 
   peer.onconnectionstatechange = () => {
-    if (!peer) return;
-
-    if (peer.connectionState === "connected") {
-      setStatus("Connexion établie : le flux vidéo est connecté.");
-    } else if (peer.connectionState === "failed") {
-      setStatus(
-        "Connexion impossible. Un serveur TURN ou un autre réseau peut être nécessaire."
-      );
-    } else if (peer.connectionState === "disconnected") {
-      setStatus("Connexion interrompue. Vérifie les deux appareils.");
-    }
+    const state = peer ? peer.connectionState : "closed";
+    setStatus("État de la connexion : " + state);
   };
+
+  peer.oniceconnectionstatechange = () => {
+    if (!peer) return;
+    console.log("ICE :", peer.iceConnectionState);
+  };
+
+  peer.ontrack = (event) => {
+    $("remoteVideo").srcObject = event.streams[0];
+    $("remoteVideo").play().catch(() => {});
+    setStatus("Écran reçu. La connexion est établie.");
+  };
+
+  if (role === "share" && localStream) {
+    localStream.getTracks().forEach(track => {
+      peer.addTrack(track, localStream);
+    });
+  }
+
+  if (role === "view") {
+    peer.addTransceiver("video", { direction: "recvonly" });
+    peer.addTransceiver("audio", { direction: "recvonly" });
+  }
 }
 
-async function acceptAndShare() {
-  if (role !== "share" || !sessionId || !sessionCode) {
-    setStatus("Lien privé absent ou invalide.");
-    return;
+async function addRemoteCandidates(session) {
+  if (!peer || !session) return;
+
+  let candidates = session.ice_candidates;
+
+  if (typeof candidates === "string") {
+    try { candidates = JSON.parse(candidates); }
+    catch { candidates = []; }
   }
 
-  if (
-    !navigator.mediaDevices ||
-    !navigator.mediaDevices.getDisplayMedia
-  ) {
-    setStatus(
-      "Ce navigateur ne propose pas la capture d'écran depuis cette page. Essaie un navigateur compatible ou une autre solution de partage."
-    );
-    return;
+  if (!Array.isArray(candidates)) return;
+
+  for (const item of candidates) {
+    if (!item || !item.role || !item.candidate) continue;
+    if (item.role === role) continue;
+
+    const key = JSON.stringify(item);
+    if (seenCandidates.has(key)) continue;
+    seenCandidates.add(key);
+
+    const candidate = new RTCIceCandidate(item.candidate);
+
+    if (!remoteDescriptionReady) {
+      pendingCandidates.push(candidate);
+      continue;
+    }
+
+    try {
+      await peer.addIceCandidate(candidate);
+    } catch (error) {
+      console.warn("Candidat ICE ignoré :", error);
+    }
+  }
+}
+
+async function flushPendingCandidates() {
+  if (!peer || !remoteDescriptionReady) return;
+
+  const list = pendingCandidates;
+  pendingCandidates = [];
+
+  for (const candidate of list) {
+    try {
+      await peer.addIceCandidate(candidate);
+    } catch (error) {
+      console.warn("Candidat en attente ignoré :", error);
+    }
+  }
+}
+
+async function readSession() {
+  const result = await supabaseRpc("lire_session_partage", {
+    p_id: sessionId,
+    p_code: sessionCode
+  });
+
+  return unwrap(result);
+}
+
+function getField(session, key) {
+  if (!session) return null;
+  let value = session[key];
+
+  if (typeof value === "string" &&
+      (key === "offer" || key === "answer" || key === "ice_candidates")) {
+    try { value = JSON.parse(value); }
+    catch {}
   }
 
-  acceptButton.disabled = true;
-  setStatus("Attends la demande d'autorisation du navigateur...");
+  return value;
+}
+
+async function startShare() {
+  $("startShareBtn").disabled = true;
 
   try {
-    // La personne doit confirmer elle-même dans le navigateur.
+    if (!navigator.mediaDevices ||
+        !navigator.mediaDevices.getDisplayMedia) {
+      throw new Error(
+        "Ce navigateur ne permet pas le partage d'écran. Essaie un navigateur compatible sur un ordinateur."
+      );
+    }
+
+    setStatus("Demande d'autorisation de partage d'écran…");
+
     localStream = await navigator.mediaDevices.getDisplayMedia({
       video: true,
-      audio: false
+      audio: true
     });
 
-    localVideo.srcObject = localStream;
+    $("localVideo").srcObject = localStream;
+    $("localVideo").play().catch(() => {});
+
+    localStream.getVideoTracks()[0].addEventListener("ended", () => {
+      stopShare();
+    });
 
     await setupPeer();
 
-    for (const track of localStream.getTracks()) {
-      peer.addTrack(track, localStream);
-    }
+    setStatus("Préparation de l'offre de connexion…");
+    makingOffer = true;
 
-    await peer.setLocalDescription(
-      await peer.createOffer()
-    );
+    const offer = await peer.createOffer();
+    await peer.setLocalDescription(offer);
 
-    const saved = await rpc("enregistrer_offre_partage", {
+    await supabaseRpc("enregistrer_offre_partage", {
       p_id: sessionId,
       p_code: sessionCode,
       p_offer: peer.localDescription.toJSON()
     });
 
-    if (saved !== true) {
-      throw new Error("L'offre n'a pas été enregistrée.");
-    }
-
-    stopButton.disabled = false;
+    makingOffer = false;
     startPolling();
 
-    localStream.getVideoTracks()[0].addEventListener(
-      "ended", stopConnection
-    );
-
-    setStatus(
-      "Partage autorisé. Connexion avec l'autre téléphone en cours..."
-    );
+    setStatus("Partage lancé. Ouvre le lien de visionnage sur l'autre appareil.");
   } catch (error) {
-    stopConnection();
-    setStatus("Partage non démarré : " + error.message);
+    makingOffer = false;
+    setStatus("Erreur de partage : " + error.message, true);
+    $("startShareBtn").disabled = false;
   }
 }
 
-async function pollSession() {
-  if (polling || stopped || !peer || !sessionId || !sessionCode) {
-    return;
-  }
-
-  polling = true;
+async function connectViewer() {
+  $("connectBtn").disabled = true;
 
   try {
-    const data = await rpc("lire_session_partage", {
-      p_id: sessionId,
-      p_code: sessionCode
-    });
+    await setupPeer();
+    startPolling();
+    setStatus("Recherche de l'écran partagé…");
 
-    if (!data || !data.id) {
-      setStatus("Session introuvable ou lien invalide.");
-      stopPolling();
-      return;
-    }
+    await checkForOffer();
+  } catch (error) {
+    setStatus("Erreur de connexion : " + error.message, true);
+    $("connectBtn").disabled = false;
+  }
+}
 
-    if (role === "view" && data.offer && !offerHandled) {
-      await peer.setRemoteDescription(
-        new RTCSessionDescription(data.offer)
-      );
+async function checkForOffer() {
+  if (role !== "view" || !peer || processingAnswer) return;
 
-      offerHandled = true;
+  const session = await readSession();
+  await addRemoteCandidates(session);
 
-      const answer = await peer.createAnswer();
-      await peer.setLocalDescription(answer);
+  const offer = getField(session, "offer");
+  const answer = getField(session, "answer");
 
-      const saved = await rpc("enregistrer_reponse_partage", {
+  if (offer && !peer.currentRemoteDescription && !processingAnswer) {
+    processingAnswer = true;
+
+    try {
+      await peer.setRemoteDescription(new RTCSessionDescription(offer));
+      remoteDescriptionReady = true;
+      await flushPendingCandidates();
+
+      const answerDescription = await peer.createAnswer();
+      await peer.setLocalDescription(answerDescription);
+
+      await supabaseRpc("enregistrer_reponse_partage", {
         p_id: sessionId,
         p_code: sessionCode,
         p_answer: peer.localDescription.toJSON()
       });
 
-      if (saved !== true) {
-        throw new Error("La réponse n'a pas été enregistrée.");
-      }
-
-      stopButton.disabled = false;
-      setStatus("Réponse envoyée. Connexion en cours...");
+      setStatus("Réponse envoyée. Connexion en cours…");
+    } finally {
+      processingAnswer = false;
     }
+  }
 
-    if (role === "share" && data.answer && !answerApplied) {
-      await peer.setRemoteDescription(
-        new RTCSessionDescription(data.answer)
-      );
-
-      answerApplied = true;
-      setStatus("Réponse reçue. Connexion en cours...");
-    }
-
-    const candidates = Array.isArray(data.ice_candidates)
-      ? data.ice_candidates
-      : [];
-
-    if (peer.remoteDescription) {
-      for (const item of candidates) {
-        if (!item || item.side === role || !item.candidate) continue;
-
-        const key = JSON.stringify(item);
-        if (seenCandidates.has(key)) continue;
-
-        seenCandidates.add(key);
-
-        try {
-          await peer.addIceCandidate(
-            new RTCIceCandidate(item.candidate)
-          );
-        } catch (error) {
-          console.warn("Candidat ICE ignoré :", error);
-        }
-      }
-    }
-  } catch (error) {
-    setStatus("Échange WebRTC : " + error.message);
-  } finally {
-    polling = false;
+  if (answer && role === "share" && peer && !peer.currentRemoteDescription) {
+    await peer.setRemoteDescription(new RTCSessionDescription(answer));
+    remoteDescriptionReady = true;
+    await flushPendingCandidates();
   }
 }
 
 function startPolling() {
-  stopPolling();
-  pollSession();
-  pollTimer = window.setInterval(pollSession, 1500);
+  if (pollingTimer) clearInterval(pollingTimer);
+
+  pollingTimer = setInterval(async () => {
+    try {
+      if (!peer) return;
+
+      const session = await readSession();
+
+      if (role === "view") {
+        const offer = getField(session, "offer");
+
+        if (offer && !peer.currentRemoteDescription) {
+          await checkForOffer();
+        } else {
+          await addRemoteCandidates(session);
+        }
+      } else {
+        const answer = getField(session, "answer");
+
+        if (answer && !peer.currentRemoteDescription) {
+          await peer.setRemoteDescription(new RTCSessionDescription(answer));
+          remoteDescriptionReady = true;
+          await flushPendingCandidates();
+        }
+
+        await addRemoteCandidates(session);
+      }
+    } catch (error) {
+      console.error("Actualisation de la session :", error);
+    }
+  }, 2000);
 }
 
-function stopPolling() {
-  if (pollTimer !== null) {
-    window.clearInterval(pollTimer);
-    pollTimer = null;
-  }
-}
-
-function stopConnection() {
-  stopped = true;
-  stopPolling();
-
+function stopShare() {
   if (localStream) {
     localStream.getTracks().forEach(track => track.stop());
+    localStream = null;
   }
 
-  localStream = null;
-  localVideo.srcObject = null;
-  remoteVideo.srcObject = null;
+  $("localVideo").srcObject = null;
 
   if (peer) {
-    peer.onicecandidate = null;
-    peer.ontrack = null;
     peer.close();
+    peer = null;
   }
 
-  peer = null;
-  seenCandidates.clear();
-  offerHandled = false;
-  answerApplied = false;
+  if (pollingTimer) {
+    clearInterval(pollingTimer);
+    pollingTimer = null;
+  }
 
-  stopButton.disabled = true;
-  acceptButton.disabled = false;
-
-  setStatus(
-    "Connexion arrêtée. Pour recommencer, crée un nouveau lien privé."
-  );
+  $("startShareBtn").disabled = false;
+  setStatus("Partage arrêté.");
 }
 
-createButton.addEventListener("click", createSession);
-copyButton.addEventListener("click", copySessionLink);
-checkButton.addEventListener("click", testSupabase);
-acceptButton.addEventListener("click", acceptAndShare);
-stopButton.addEventListener("click", stopConnection);
+function openSessionFromUrl(urlText) {
+  try {
+    const url = new URL(urlText);
+    const params = new URLSearchParams(url.hash.replace(/^#/, ""));
 
-readPrivateLink();
+    const newRole = params.get("role");
+    const newId = params.get("id");
+    const newCode = params.get("code");
+
+    if (!["share", "view"].includes(newRole) || !newId || !newCode) {
+      throw new Error("Le lien ne contient pas les informations de session attendues.");
+    }
+
+    sessionId = newId;
+    sessionCode = newCode;
+    seenCandidates = new Set();
+    pendingCandidates = [];
+    remoteDescriptionReady = false;
+
+    showRole(newRole);
+    setStatus("Session chargée. Tu peux continuer.");
+
+    if (newRole === "view") {
+      connectViewer();
+    }
+  } catch (error) {
+    setStatus("Lien invalide : " + error.message, true);
+  }
+}
+
+$("createBtn").addEventListener("click", createSession);
+$("copyShareBtn").addEventListener("click", () => copyText($("shareLink").textContent));
+$("copyViewBtn").addEventListener("click", () => copyText($("viewLink").textContent));
+$("startShareBtn").addEventListener("click", startShare);
+$("stopShareBtn").addEventListener("click", stopShare);
+$("connectBtn").addEventListener("click", connectViewer);
+
+$("openSessionBtn").addEventListener("click", () => {
+  openSessionFromUrl($("sessionUrl").value.trim());
+});
+
+window.addEventListener("hashchange", () => {
+  const info = readHash();
+
+  if (info.role && info.id && info.code) {
+    openSessionFromUrl(window.location.href);
+  }
+});
+
+const initial = readHash();
+
+if (initial.role && initial.id && initial.code) {
+  openSessionFromUrl(window.location.href);
+}
 </script>
 </body>
 </html>
