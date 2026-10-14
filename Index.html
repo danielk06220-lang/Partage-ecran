@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>Partage-écran</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 22px;
+      background: #101827;
+      color: #f8fafc;
+      font-family: Arial, sans-serif;
+    }
+    main {
+      max-width: 650px;
+      margin: 24px auto;
+      padding: 22px;
+      background: #1e293b;
+      border-radius: 18px;
+    }
+    h1 { color: #60a5fa; }
+    p { line-height: 1.6; color: #cbd5e1; }
+    label { display: block; margin: 18px 0 8px; }
+    input, select {
+      width: 100%;
+      padding: 13px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+    }
+    button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px;
+      border: 0;
+      border-radius: 9px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .5; }
+    .primary { background: #2563eb; color: white; }
+    .secondary { background: #334155; color: white; }
+    .stop { background: #dc2626; color: white; }
+    video {
+      width: 100%;
+      margin-top: 18px;
+      background: black;
+      border-radius: 10px;
+    }
+    #status {
+      padding: 12px;
+      background: #0f172a;
+      border-radius: 8px;
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Partage-écran</h1>
+  <p>
+    Partage ton écran uniquement avec une personne de confiance.
+    Tu dois accepter explicitement le partage sur ton appareil.
+    Tu peux l'arrêter à tout moment.
+  </p>
+
+  <label for="role">Choisis ton rôle</label>
+  <select id="role">
+    <option value="share">Je partage mon écran</option>
+    <option value="view">Je souhaite regarder un partage</option>
+  </select>
+
+  <label for="session">Code de session</label>
+  <input id="session" maxlength="80"
+         placeholder="Ex. famille-123"
+         autocomplete="off">
+
+  <button class="primary" id="check">
+    Tester la connexion Supabase
+  </button>
+
+  <button class="secondary" id="start">
+    Autoriser et afficher mon écran
+  </button>
+
+  <button class="stop" id="stop" disabled>
+    Arrêter le partage
+  </button>
+
+  <video id="preview" autoplay muted playsinline></video>
+  <p id="status" role="status" aria-live="polite">
+    Prêt. Aucun écran n'est partagé.
+  </p>
+</main>
+
+<script>
+  const SUPABASE_URL =
+    "https://zaaqzngysplejdyutufj.supabase.co";
+
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_xm_amd25LgQ0CKP8XABtBQ_13EFxUP_";
+
+  // Nom technique supposé d'après l'URL de la fonction.
+  const FUNCTION_NAME = "repondre";
+
+  const role = document.getElementById("role");
+  const session = document.getElementById("session");
+  const preview = document.getElementById("preview");
+  const status = document.getElementById("status");
+  const start = document.getElementById("start");
+  const stop = document.getElementById("stop");
+
+  let stream = null;
+
+  function setStatus(message) {
+    status.textContent = message;
+  }
+
+  async function checkSupabase() {
+    setStatus("Vérification de la fonction Supabase...");
+
+    try {
+      const response = await fetch(
+        `${SUPABASE_URL}/functions/v1/${FUNCTION_NAME}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify({ name: "Partage-ecran" })
+        }
+      );
+
+      const text = await response.text();
+
+      if (!response.ok) {
+        setStatus(
+          `Erreur HTTP ${response.status}. Vérifie le nom de la fonction et sa configuration.`
+        );
+        return;
+      }
+
+      setStatus("Réponse de Supabase : " + text.slice(0, 500));
+    } catch (error) {
+      setStatus(
+        "Connexion impossible. Vérifie Internet et la configuration Supabase."
+      );
+    }
+  }
+
+  async function startSharing() {
+    if (role.value === "view") {
+      setStatus(
+        "Le visionnage distant n'est pas encore configuré. Aucun écran distant ne sera affiché."
+      );
+      return;
+    }
+
+    if (!session.value.trim()) {
+      setStatus("Entre un code de session.");
+      return;
+    }
+
+    if (!navigator.mediaDevices?.getDisplayMedia) {
+      setStatus(
+        "Le navigateur ne prend pas en charge le partage d'écran ici. Essaie un navigateur compatible avec HTTPS."
+      );
+      return;
+    }
+
+    try {
+      stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: false
+      });
+
+      preview.srcObject = stream;
+      start.disabled = true;
+      stop.disabled = false;
+
+      setStatus(
+        "Partage autorisé. Aperçu local uniquement : la transmission distante reste à configurer."
+      );
+
+      stream.getVideoTracks()[0].addEventListener(
+        "ended", stopSharing
+      );
+    } catch (error) {
+      setStatus("Partage annulé ou autorisation refusée.");
+    }
+  }
+
+  function stopSharing() {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+
+    stream = null;
+    preview.srcObject = null;
+    start.disabled = false;
+    stop.disabled = true;
+    setStatus("Partage arrêté.");
+  }
+
+  document.getElementById("check")
+    .addEventListener("click", checkSupabase);
+
+  start.addEventListener("click", startSharing);
+  stop.addEventListener("click", stopSharing);
+</script>
+</body>
+</html>
