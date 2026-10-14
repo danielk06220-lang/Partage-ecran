@@ -2,110 +2,137 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101827">
-  <title>Partage d'écran privé</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      padding: 18px;
-      background: #101827;
-      color: #f8fafc;
-      font-family: Arial, sans-serif;
-    }
-    main {
-      max-width: 650px;
-      margin: 15px auto;
-      padding: 22px;
-      background: #1e293b;
-      border-radius: 18px;
-    }
-    h1 { color: #60a5fa; }
-    p { line-height: 1.6; color: #cbd5e1; }
-    label { display: block; margin: 18px 0 8px; }
-    input, select {
-      width: 100%;
-      padding: 13px;
-      border-radius: 8px;
-      border: 1px solid #475569;
-      background: #0f172a;
-      color: white;
-    }
-    button {
-      width: 100%;
-      margin-top: 12px;
-      padding: 14px;
-      border: 0;
-      border-radius: 9px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:disabled { opacity: .5; }
-    .primary { background: #2563eb; color: white; }
-    .secondary { background: #334155; color: white; }
-    .stop { background: #dc2626; color: white; }
-    video {
-      display: block;
-      width: 100%;
-      margin-top: 16px;
-      background: #000;
-      border-radius: 10px;
-    }
-    #status {
-      padding: 12px;
-      background: #0f172a;
-      border-radius: 8px;
-      overflow-wrap: anywhere;
-    }
-    .small { font-size: 13px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>Partage d'écran privé</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 18px;
+  background: #101827;
+  color: #f8fafc;
+  font-family: Arial, sans-serif;
+}
+
+main {
+  max-width: 650px;
+  margin: 15px auto;
+  padding: 22px;
+  background: #1e293b;
+  border-radius: 18px;
+}
+
+h1 { color: #60a5fa; }
+p { line-height: 1.6; color: #cbd5e1; }
+
+label {
+  display: block;
+  margin: 18px 0 8px;
+}
+
+input {
+  width: 100%;
+  padding: 13px;
+  border-radius: 8px;
+  border: 1px solid #475569;
+  background: #0f172a;
+  color: white;
+}
+
+button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  border: 0;
+  border-radius: 9px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:disabled { opacity: .5; }
+.primary { background: #2563eb; color: white; }
+.secondary { background: #334155; color: white; }
+.stop { background: #dc2626; color: white; }
+
+#accept {
+  min-height: 68px;
+  font-size: 19px;
+  background: #16a34a;
+  color: white;
+}
+
+video {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  background: #000;
+  border-radius: 10px;
+}
+
+#status {
+  padding: 12px;
+  background: #0f172a;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.small { font-size: 13px; }
+.hidden { display: none !important; }
+</style>
 </head>
+
 <body>
 <main>
-  <h1>Partage-écran privé</h1>
-  <p>
-    Partage uniquement avec une personne de confiance.
-    La personne qui partage doit autoriser la capture
-    d'écran sur son appareil.
+  <h1 id="heading">Partage d'écran privé</h1>
+
+  <p id="intro">
+    Crée un lien privé pour démarrer une session avec une personne
+    de confiance.
   </p>
 
-  <label for="role">Choisis ton rôle</label>
-  <select id="role">
-    <option value="view">Je crée un lien et je regarde</option>
-    <option value="share">Je partage mon écran</option>
-  </select>
+  <section id="creatorPanel">
+    <button class="primary" id="create">
+      Créer un lien privé
+    </button>
 
-  <button class="primary" id="create">
-    Créer un lien privé
-  </button>
+    <label for="shareLink">Lien privé à envoyer</label>
+    <input id="shareLink" readonly
+           placeholder="Le lien apparaîtra ici">
 
-  <label for="shareLink">Lien privé à envoyer</label>
-  <input id="shareLink" readonly
-         placeholder="Le lien apparaîtra ici">
+    <button class="secondary" id="copy" disabled>
+      Copier le lien
+    </button>
 
-  <button class="secondary" id="copy" disabled>
-    Copier le lien
-  </button>
+    <button class="secondary" id="check">
+      Tester la connexion Supabase
+    </button>
 
-  <button class="primary" id="check">
-    Tester la connexion Supabase
-  </button>
+    <h3>Écran reçu</h3>
+    <video id="remoteVideo" autoplay playsinline controls></video>
+  </section>
 
-  <button class="primary" id="start">
-    Autoriser et démarrer le partage
-  </button>
+  <section id="sharePanel" class="hidden">
+    <p>
+      Tu es sur la page de partage. En appuyant sur le bouton,
+      tu demandes à ton navigateur de partager ton écran.
+      Tu peux refuser ou arrêter à tout moment.
+    </p>
+
+    <button id="accept">
+      Accepter et partager mon écran
+    </button>
+  </section>
 
   <button class="stop" id="stop" disabled>
     Arrêter la connexion
   </button>
 
-  <h3>Écran reçu</h3>
-  <video id="remoteVideo" autoplay playsinline controls></video>
-
-  <details>
+  <details id="localDetails" class="hidden">
     <summary>Aperçu local du partage</summary>
     <video id="localVideo" autoplay muted playsinline></video>
   </details>
@@ -115,8 +142,8 @@
   </p>
 
   <p class="small">
-    Le lien est privé : toute personne qui le possède peut
-    tenter de rejoindre cette session. Ne le publie pas.
+    Le lien est privé : transmets-le uniquement à la personne
+    concernée. La capture d'écran nécessite son autorisation.
   </p>
 </main>
 
@@ -129,30 +156,34 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   "sb_publishable_xm_amd25LgQ0CKP8XABtBQ_13EFxUP_";
 
-const role = document.getElementById("role");
-const createButton = document.getElementById("create");
-const copyButton = document.getElementById("copy");
-const checkButton = document.getElementById("check");
-const startButton = document.getElementById("start");
-const stopButton = document.getElementById("stop");
-const shareLink = document.getElementById("shareLink");
-const localVideo = document.getElementById("localVideo");
-const remoteVideo = document.getElementById("remoteVideo");
-const statusBox = document.getElementById("status");
+const $ = id => document.getElementById(id);
 
+const creatorPanel = $("creatorPanel");
+const sharePanel = $("sharePanel");
+const createButton = $("create");
+const copyButton = $("copy");
+const checkButton = $("check");
+const acceptButton = $("accept");
+const stopButton = $("stop");
+const shareLink = $("shareLink");
+const localVideo = $("localVideo");
+const remoteVideo = $("remoteVideo");
+const localDetails = $("localDetails");
+
+let role = "view";
 let sessionId = null;
 let sessionCode = null;
 let peer = null;
 let localStream = null;
 let pollTimer = null;
 let polling = false;
-let answerSent = false;
-let answerApplied = false;
 let offerHandled = false;
+let answerApplied = false;
 let seenCandidates = new Set();
+let stopped = false;
 
 function setStatus(message) {
-  statusBox.textContent = message;
+  $("status").textContent = message;
 }
 
 async function rpc(name, parameters = {}) {
@@ -173,47 +204,51 @@ async function rpc(name, parameters = {}) {
 
   if (!response.ok) {
     throw new Error(
-      `Supabase (${response.status}) : ${text.slice(0, 300)}`
+      `Supabase (${response.status}) : ${text.slice(0, 250)}`
     );
   }
 
   if (!text) return null;
 
-  try {
-    return JSON.parse(text);
-  } catch {
-    return text;
-  }
+  return JSON.parse(text);
 }
 
-function getLinkSession() {
+function readPrivateLink() {
   const params = new URLSearchParams(
-    window.location.hash.replace(/^#/, "")
+    location.hash.replace(/^#/, "")
   );
 
   const id = params.get("id");
   const code = params.get("code");
-  const requestedRole = params.get("role");
 
   if (
-    requestedRole === "share" &&
-    id && code &&
-    /^[0-9a-f-]{36}$/i.test(id) &&
-    /^[0-9a-f-]{36}$/i.test(code)
+    params.get("role") !== "share" ||
+    !id || !code ||
+    !/^[0-9a-f-]{36}$/i.test(id) ||
+    !/^[0-9a-f-]{36}$/i.test(code)
   ) {
-    sessionId = id;
-    sessionCode = code;
-    role.value = "share";
-    createButton.disabled = true;
-    setStatus(
-      "Lien reconnu. Vérifie l'adresse du site, puis appuie sur le bouton de partage."
-    );
+    return false;
   }
+
+  sessionId = id;
+  sessionCode = code;
+  role = "share";
+
+  creatorPanel.classList.add("hidden");
+  sharePanel.classList.remove("hidden");
+  localDetails.classList.remove("hidden");
+
+  $("heading").textContent = "Partager mon écran";
+  $("intro").textContent =
+    "Vérifie que ce lien provient d'une personne de confiance.";
+
+  acceptButton.disabled = false;
+  return true;
 }
 
 async function testSupabase() {
   checkButton.disabled = true;
-  setStatus("Test de connexion à Supabase...");
+  setStatus("Test de connexion Supabase...");
 
   try {
     await rpc("verifier_session_partage", {
@@ -221,38 +256,30 @@ async function testSupabase() {
       p_code: "00000000-0000-4000-8000-000000000000"
     });
 
-    setStatus(
-      "Connexion Supabase réussie. Le test n'a pas créé de session."
-    );
+    setStatus("Connexion Supabase réussie. Aucune session créée.");
   } catch (error) {
-    setStatus("Échec du test : " + error.message);
+    setStatus("Test échoué : " + error.message);
   } finally {
     checkButton.disabled = false;
   }
 }
 
 async function createSession() {
-  if (role.value !== "view") {
-    setStatus(
-      "Pour créer un lien, choisis d'abord « Je crée un lien et je regarde »."
-    );
-    return;
-  }
-
   createButton.disabled = true;
-  setStatus("Création d'une session privée...");
+  setStatus("Création du lien privé...");
 
   try {
     const result = await rpc("creer_demande_partage_lien");
 
     if (!result || !result.id || !result.code) {
-      throw new Error("Supabase n'a pas renvoyé l'identifiant et le code.");
+      throw new Error("Identifiant ou code absent dans la réponse.");
     }
 
     sessionId = result.id;
     sessionCode = result.code;
+    role = "view";
 
-    const link = new URL(window.location.href);
+    const link = new URL(location.href);
     link.hash = new URLSearchParams({
       role: "share",
       id: sessionId,
@@ -262,15 +289,15 @@ async function createSession() {
     shareLink.value = link.href;
     copyButton.disabled = false;
 
-    await setupPeer("view");
+    await setupPeer();
     startPolling();
 
     setStatus(
-      "Lien créé. Copie-le et envoie-le à la personne qui doit partager son écran."
+      "Lien créé. Envoie-le à la personne qui doit partager son écran."
     );
   } catch (error) {
     createButton.disabled = false;
-    setStatus("Impossible de créer la session : " + error.message);
+    setStatus("Erreur lors de la création : " + error.message);
   }
 }
 
@@ -283,22 +310,21 @@ async function copySessionLink() {
     } else {
       shareLink.focus();
       shareLink.select();
+
       if (!document.execCommand("copy")) {
         throw new Error("Copie automatique indisponible.");
       }
     }
 
-    setStatus("Lien copié. Envoie-le uniquement à la personne concernée.");
-  } catch (error) {
+    setStatus("Lien copié. Envoie-le en privé.");
+  } catch {
     shareLink.focus();
     shareLink.select();
-    setStatus(
-      "Sélectionne le lien, puis choisis Copier dans le menu du téléphone."
-    );
+    setStatus("Sélectionne le lien, puis appuie sur Copier.");
   }
 }
 
-async function setupPeer(localRole) {
+async function setupPeer() {
   if (peer) return;
 
   peer = new RTCPeerConnection({
@@ -307,7 +333,7 @@ async function setupPeer(localRole) {
     ]
   });
 
-  peer.onicecandidate = async (event) => {
+  peer.onicecandidate = async event => {
     if (!event.candidate || !sessionId || !sessionCode) return;
 
     try {
@@ -315,20 +341,20 @@ async function setupPeer(localRole) {
         p_id: sessionId,
         p_code: sessionCode,
         p_candidat: {
-          side: localRole,
+          side: role,
           candidate: event.candidate.toJSON()
         }
       });
     } catch (error) {
-      setStatus("Erreur d'échange réseau : " + error.message);
+      setStatus("Erreur réseau : " + error.message);
     }
   };
 
-  peer.ontrack = (event) => {
+  peer.ontrack = event => {
     if (event.streams && event.streams[0]) {
       remoteVideo.srcObject = event.streams[0];
       remoteVideo.play().catch(() => {});
-      setStatus("Flux vidéo reçu. La connexion est en cours.");
+      setStatus("Flux vidéo reçu. Connexion en cours...");
     }
   };
 
@@ -336,10 +362,10 @@ async function setupPeer(localRole) {
     if (!peer) return;
 
     if (peer.connectionState === "connected") {
-      setStatus("Connexion WebRTC établie.");
+      setStatus("Connexion établie : le flux vidéo est connecté.");
     } else if (peer.connectionState === "failed") {
       setStatus(
-        "Connexion échouée. Le réseau peut nécessiter un serveur TURN."
+        "Connexion impossible. Un serveur TURN ou un autre réseau peut être nécessaire."
       );
     } else if (peer.connectionState === "disconnected") {
       setStatus("Connexion interrompue. Vérifie les deux appareils.");
@@ -347,34 +373,27 @@ async function setupPeer(localRole) {
   };
 }
 
-async function startSharing() {
-  if (role.value !== "share") {
+async function acceptAndShare() {
+  if (role !== "share" || !sessionId || !sessionCode) {
+    setStatus("Lien privé absent ou invalide.");
+    return;
+  }
+
+  if (
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getDisplayMedia
+  ) {
     setStatus(
-      "Choisis « Je partage mon écran » ou ouvre le lien privé reçu."
+      "Ce navigateur ne propose pas la capture d'écran depuis cette page. Essaie un navigateur compatible ou une autre solution de partage."
     );
     return;
   }
 
-  if (!sessionId || !sessionCode) {
-    setStatus(
-      "Aucun lien de session détecté. Demande un lien privé à la personne qui regarde."
-    );
-    return;
-  }
-
-  if (!navigator.mediaDevices ||
-      !navigator.mediaDevices.getDisplayMedia) {
-    setStatus(
-      "Ce navigateur ne permet pas la capture d'écran depuis cette page. Essaie un navigateur compatible ; si l'option reste absente, il faudra une autre solution de partage."
-    );
-    return;
-  }
-
-  startButton.disabled = true;
-  setStatus("Demande d'autorisation de partage d'écran...");
+  acceptButton.disabled = true;
+  setStatus("Attends la demande d'autorisation du navigateur...");
 
   try {
-    // Le navigateur doit afficher sa propre demande d'autorisation.
+    // La personne doit confirmer elle-même dans le navigateur.
     localStream = await navigator.mediaDevices.getDisplayMedia({
       video: true,
       audio: false
@@ -382,11 +401,11 @@ async function startSharing() {
 
     localVideo.srcObject = localStream;
 
-    await setupPeer("share");
+    await setupPeer();
 
-    localStream.getTracks().forEach(track => {
+    for (const track of localStream.getTracks()) {
       peer.addTrack(track, localStream);
-    });
+    }
 
     await peer.setLocalDescription(
       await peer.createOffer()
@@ -399,35 +418,29 @@ async function startSharing() {
     });
 
     if (saved !== true) {
-      throw new Error(
-        "L'offre n'a pas été enregistrée. Vérifie la session."
-      );
+      throw new Error("L'offre n'a pas été enregistrée.");
     }
 
-    startButton.disabled = true;
     stopButton.disabled = false;
+    startPolling();
 
     localStream.getVideoTracks()[0].addEventListener(
-      "ended", stopSharing
+      "ended", stopConnection
     );
 
-    startPolling();
     setStatus(
-      "Partage autorisé. Connexion à l'autre appareil en cours..."
+      "Partage autorisé. Connexion avec l'autre téléphone en cours..."
     );
   } catch (error) {
-    stopSharing();
-    setStatus(
-      "Le partage n'a pas pu démarrer : " + error.message
-    );
+    stopConnection();
+    setStatus("Partage non démarré : " + error.message);
   }
 }
 
 async function pollSession() {
-  if (
-    polling || !peer ||
-    !sessionId || !sessionCode
-  ) return;
+  if (polling || stopped || !peer || !sessionId || !sessionCode) {
+    return;
+  }
 
   polling = true;
 
@@ -438,13 +451,12 @@ async function pollSession() {
     });
 
     if (!data || !data.id) {
-      setStatus("Session introuvable ou code privé incorrect.");
+      setStatus("Session introuvable ou lien invalide.");
       stopPolling();
       return;
     }
 
-    if (role.value === "view" &&
-        data.offer && !offerHandled) {
+    if (role === "view" && data.offer && !offerHandled) {
       await peer.setRemoteDescription(
         new RTCSessionDescription(data.offer)
       );
@@ -461,22 +473,20 @@ async function pollSession() {
       });
 
       if (saved !== true) {
-        throw new Error("La réponse WebRTC n'a pas été enregistrée.");
+        throw new Error("La réponse n'a pas été enregistrée.");
       }
 
-      answerSent = true;
       stopButton.disabled = false;
       setStatus("Réponse envoyée. Connexion en cours...");
     }
 
-    if (role.value === "share" &&
-        data.answer && !answerApplied) {
+    if (role === "share" && data.answer && !answerApplied) {
       await peer.setRemoteDescription(
         new RTCSessionDescription(data.answer)
       );
 
       answerApplied = true;
-      setStatus("Réponse reçue. Établissement de la connexion...");
+      setStatus("Réponse reçue. Connexion en cours...");
     }
 
     const candidates = Array.isArray(data.ice_candidates)
@@ -485,8 +495,7 @@ async function pollSession() {
 
     if (peer.remoteDescription) {
       for (const item of candidates) {
-        if (!item || item.side === role.value) continue;
-        if (!item.candidate) continue;
+        if (!item || item.side === role || !item.candidate) continue;
 
         const key = JSON.stringify(item);
         if (seenCandidates.has(key)) continue;
@@ -498,7 +507,6 @@ async function pollSession() {
             new RTCIceCandidate(item.candidate)
           );
         } catch (error) {
-          // Un candidat peut échouer si le réseau change.
           console.warn("Candidat ICE ignoré :", error);
         }
       }
@@ -523,7 +531,8 @@ function stopPolling() {
   }
 }
 
-function stopSharing() {
+function stopConnection() {
+  stopped = true;
   stopPolling();
 
   if (localStream) {
@@ -541,26 +550,25 @@ function stopSharing() {
   }
 
   peer = null;
-  seenCandidates = new Set();
-  answerSent = false;
-  answerApplied = false;
+  seenCandidates.clear();
   offerHandled = false;
+  answerApplied = false;
 
-  startButton.disabled = false;
   stopButton.disabled = true;
+  acceptButton.disabled = false;
 
   setStatus(
-    "Connexion arrêtée. Pour recommencer, crée une nouvelle session."
+    "Connexion arrêtée. Pour recommencer, crée un nouveau lien privé."
   );
 }
 
 createButton.addEventListener("click", createSession);
 copyButton.addEventListener("click", copySessionLink);
 checkButton.addEventListener("click", testSupabase);
-startButton.addEventListener("click", startSharing);
-stopButton.addEventListener("click", stopSharing);
+acceptButton.addEventListener("click", acceptAndShare);
+stopButton.addEventListener("click", stopConnection);
 
-getLinkSession();
+readPrivateLink();
 </script>
 </body>
 </html>
