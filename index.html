@@ -2,288 +2,146 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#111827">
-  <title>Partage d'écran privé</title>
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #0b1120;
-      color: #f8fafc;
-    }
-
-    main {
-      width: min(720px, 100%);
-      margin: auto;
-      padding: 24px 16px 40px;
-    }
-
-    .card {
-      background: #151e30;
-      border: 1px solid #29364c;
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-
-    h1 { font-size: 27px; margin: 0 0 10px; }
-    h2 { font-size: 19px; margin-top: 0; }
-    p { color: #cbd5e1; line-height: 1.5; }
-
-    button {
-      width: 100%;
-      border: 0;
-      border-radius: 10px;
-      padding: 14px;
-      margin-top: 10px;
-      background: #3b82f6;
-      color: white;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button.secondary { background: #334155; }
-    button:disabled { opacity: .55; cursor: not-allowed; }
-
-    input {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #475569;
-      border-radius: 9px;
-      background: #0b1120;
-      color: white;
-      margin-top: 8px;
-      font-size: 15px;
-    }
-
-    video {
-      width: 100%;
-      display: block;
-      background: #020617;
-      border-radius: 12px;
-      margin-top: 12px;
-      min-height: 180px;
-      max-height: 65vh;
-    }
-
-    .status {
-      border-radius: 10px;
-      padding: 12px;
-      background: #0b1120;
-      color: #cbd5e1;
-      overflow-wrap: anywhere;
-      line-height: 1.5;
-    }
-
-    .hidden { display: none !important; }
-    .small { font-size: 13px; color: #94a3b8; }
-    .linkbox { overflow-wrap: anywhere; font-size: 13px; }
-    .green { color: #86efac; }
-    .red { color: #fca5a5; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Partage d'écran privé</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1120;color:#f8fafc;font-family:Arial,sans-serif}
+main{max-width:650px;margin:auto;padding:22px 15px}
+.card{background:#151e30;border:1px solid #29364c;border-radius:16px;padding:20px;margin-bottom:16px}
+h1{font-size:26px;margin-top:0}
+p{color:#cbd5e1;line-height:1.5}
+button{width:100%;padding:15px;margin-top:10px;border:0;border-radius:10px;background:#3b82f6;color:white;font-weight:bold;font-size:16px}
+button:disabled{opacity:.5}
+.secondary{background:#334155}
+.status{background:#0b1120;padding:12px;border-radius:9px;overflow-wrap:anywhere;line-height:1.5}
+video{width:100%;background:#020617;border-radius:10px;margin-top:12px;max-height:65vh}
+.hidden{display:none!important}
+.small{font-size:13px;color:#94a3b8}
+</style>
 </head>
-
 <body>
 <main>
   <section class="card">
     <h1>Partage d'écran privé</h1>
-    <p>
-      Crée une session, ouvre le lien de partage sur l'appareil
-      dont tu veux partager l'écran et le lien de visionnage sur
-      l'autre appareil.
-    </p>
+    <p>Crée un lien, envoie-le à ta sœur et regarde son écran en direct.</p>
     <div id="status" class="status">Prêt.</div>
   </section>
 
   <section id="home" class="card">
-    <h2>1. Créer une session</h2>
-    <p>Crée deux liens distincts : un pour partager l'écran et un pour le regarder.</p>
-    <button id="createBtn">Créer une session privée</button>
-
+    <h2>Créer une session</h2>
+    <button id="createBtn">Créer un lien</button>
     <div id="links" class="hidden">
-      <p><strong>Lien pour partager l'écran</strong></p>
-      <div id="shareLink" class="status linkbox"></div>
-      <button id="copyShareBtn" class="secondary">Copier le lien de partage</button>
-
-      <p><strong>Lien pour regarder l'écran</strong></p>
-      <div id="viewLink" class="status linkbox"></div>
-      <button id="copyViewBtn" class="secondary">Copier le lien de visionnage</button>
+      <p><strong>Envoie ce lien à ta sœur :</strong></p>
+      <div id="shareLink" class="status"></div>
+      <button id="copyShare" class="secondary">Copier le lien pour ma sœur</button>
+      <p><strong>Ton lien pour regarder :</strong></p>
+      <div id="viewLink" class="status"></div>
+      <button id="copyView" class="secondary">Copier mon lien de visionnage</button>
     </div>
   </section>
 
   <section id="sharePanel" class="card hidden">
-    <h2>2. Partager cet écran</h2>
-    <p>
-      Appuie sur le bouton puis choisis l'écran, la fenêtre ou l'onglet
-      que le navigateur te propose de partager.
-    </p>
-    <button id="startShareBtn">Démarrer le partage d'écran</button>
-    <button id="stopShareBtn" class="secondary">Arrêter le partage</button>
+    <h2>Partager mon écran</h2>
+    <p>Appuie ci-dessous, puis confirme le partage dans la fenêtre de ton navigateur.</p>
+    <button id="startShare">Autoriser et partager mon écran</button>
+    <button id="stopShare" class="secondary">Arrêter le partage</button>
     <video id="localVideo" autoplay muted playsinline></video>
   </section>
 
   <section id="viewPanel" class="card hidden">
-    <h2>3. Regarder l'écran partagé</h2>
-    <p>Garde cette page ouverte pendant la session.</p>
+    <h2>Écran reçu</h2>
     <video id="remoteVideo" autoplay playsinline controls></video>
     <button id="connectBtn">Se connecter au partage</button>
   </section>
 
-  <section id="manualPanel" class="card">
-    <h2>Rejoindre une session</h2>
-    <p>Si tu as reçu un lien complet, ouvre-le directement dans le navigateur.</p>
-    <label for="sessionUrl">Ou colle ici le lien reçu :</label>
-    <input id="sessionUrl" type="url" placeholder="https://.../#role=view&id=...&code=...">
-    <button id="openSessionBtn" class="secondary">Ouvrir cette session</button>
-  </section>
-
-  <p class="small">
-    La connexion dépend du navigateur, des autorisations de partage d'écran
-    et de la disponibilité du réseau. Ne partage pas un écran contenant
-    des informations confidentielles.
-  </p>
+  <p class="small">Le partage ne démarre qu'après autorisation de la personne qui partage. La compatibilité dépend du navigateur et de l'appareil.</p>
 </main>
 
 <script>
 "use strict";
 
-/* CONFIGURATION SUPABASE */
 const SUPABASE_URL = "https://zaaqzngysplejdyutufj.supabase.co";
-
-/* Clé publique Supabase : ce n'est PAS la service_role. */
 const SUPABASE_ANON_KEY = "sb_publishable_xm_amd25LgQ0CKP8XABtBQ_13EFxUP_";
-
-/* Fonction Supabase qui fournit les serveurs TURN.
-   La clé API Metered reste dans le secret Supabase METERED_API_KEY. */
-const TURN_FUNCTION_URL =
-  SUPABASE_URL + "/functions/v1/metered-ice";
-
-const $ = (id) => document.getElementById(id);
+const TURN_FUNCTION_URL = SUPABASE_URL + "/functions/v1/metered-ice";
+const $ = id => document.getElementById(id);
 
 let sessionId = null;
 let sessionCode = null;
+let role = null;
 let peer = null;
 let localStream = null;
-let role = null;
 let pollingTimer = null;
+let remoteReady = false;
 let seenCandidates = new Set();
-let makingOffer = false;
-let processingAnswer = false;
-let remoteDescriptionReady = false;
 let pendingCandidates = [];
+let busy = false;
 
-function setStatus(message, error = false) {
+function status(message, error = false) {
   $("status").textContent = message;
-  $("status").className = "status" + (error ? " red" : "");
+  $("status").style.color = error ? "#fca5a5" : "#cbd5e1";
 }
 
 function headers() {
   return {
-    "apikey": SUPABASE_ANON_KEY,
-    "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: "Bearer " + SUPABASE_ANON_KEY,
     "Content-Type": "application/json"
   };
 }
 
-async function supabaseRpc(name, body = {}) {
+async function rpc(name, args = {}) {
   const response = await fetch(
     SUPABASE_URL + "/rest/v1/rpc/" + name,
-    {
-      method: "POST",
-      headers: headers(),
-      body: JSON.stringify(body)
-    }
+    { method: "POST", headers: headers(), body: JSON.stringify(args) }
   );
-
   const text = await response.text();
-
-  if (!response.ok) {
-    throw new Error(name + " : " + response.status + " — " + text);
-  }
-
+  if (!response.ok) throw new Error(name + " (" + response.status + "): " + text);
   if (!text) return null;
-
-  try { return JSON.parse(text); }
-  catch { return text; }
+  return JSON.parse(text);
 }
 
 function unwrap(value) {
-  if (Array.isArray(value)) return value[0] ?? null;
-  return value;
+  return Array.isArray(value) ? value[0] : value;
 }
 
-function buildLink(linkRole) {
-  const url = new URL(window.location.href);
+function makeLink(linkRole) {
+  const url = new URL(location.href);
   url.hash = new URLSearchParams({
-    role: linkRole,
-    id: sessionId,
-    code: sessionCode
+    role: linkRole, id: sessionId, code: sessionCode
   }).toString();
-  return url.toString();
+  return url.href;
 }
 
-async function copyText(text) {
+async function copyText(value) {
   try {
-    await navigator.clipboard.writeText(text);
-    setStatus("Lien copié.");
+    await navigator.clipboard.writeText(value);
+    status("Lien copié. Tu peux l'envoyer.");
   } catch {
-    window.prompt("Copie ce lien :", text);
+    prompt("Copie ce lien :", value);
   }
-}
-
-function readHash() {
-  const params = new URLSearchParams(
-    window.location.hash.replace(/^#/, "")
-  );
-
-  return {
-    role: params.get("role"),
-    id: params.get("id"),
-    code: params.get("code")
-  };
-}
-
-function showRole(newRole) {
-  role = newRole;
-  $("home").classList.toggle("hidden", !!newRole);
-  $("manualPanel").classList.toggle("hidden", !!newRole);
-  $("sharePanel").classList.toggle("hidden", newRole !== "share");
-  $("viewPanel").classList.toggle("hidden", newRole !== "view");
 }
 
 async function createSession() {
   $("createBtn").disabled = true;
-  setStatus("Création de la session…");
+  status("Création de la session…");
 
   try {
-    const result = unwrap(await supabaseRpc("creer_demande_partage_lien"));
-
+    const result = unwrap(await rpc("creer_demande_partage_lien"));
     if (!result || !result.id || !result.code) {
-      throw new Error(
-        "La fonction n'a pas renvoyé les champs id et code. Vérifie sa réponse dans Supabase."
-      );
+      throw new Error("La réponse Supabase ne contient pas id et code.");
     }
 
     sessionId = result.id;
     sessionCode = result.code;
-
-    const shareUrl = buildLink("share");
-    const viewUrl = buildLink("view");
-
-    $("shareLink").textContent = shareUrl;
-    $("viewLink").textContent = viewUrl;
+    $("shareLink").textContent = makeLink("share");
+    $("viewLink").textContent = makeLink("view");
     $("links").classList.remove("hidden");
-
-    setStatus("Session créée. Envoie chaque lien à l'appareil correspondant.");
-  } catch (error) {
-    setStatus("Impossible de créer la session : " + error.message, true);
+    status("Session créée. Envoie le premier lien à ta sœur.");
+  } catch (e) {
+    status("Erreur de création : " + e.message, true);
   } finally {
     $("createBtn").disabled = false;
   }
@@ -291,90 +149,53 @@ async function createSession() {
 
 async function getIceServers() {
   const response = await fetch(TURN_FUNCTION_URL, {
-    method: "GET",
-    headers: headers(),
-    cache: "no-store"
+    method: "GET", headers: headers(), cache: "no-store"
   });
+  const text = await response.text();
+  if (!response.ok) throw new Error("TURN (" + response.status + "): " + text);
 
-  const body = await response.text();
-
-  if (!response.ok) {
-    throw new Error(
-      "La fonction TURN répond " + response.status + " : " + body
-    );
-  }
-
-  let data;
-  try {
-    data = JSON.parse(body);
-  } catch {
-    throw new Error("La fonction TURN n'a pas renvoyé du JSON valide.");
-  }
-
-  /* Accepte une liste de serveurs ou un objet contenant iceServers. */
-  const servers = Array.isArray(data)
-    ? data
-    : (data.iceServers || data.ice_servers || []);
-
-  if (!Array.isArray(servers) || servers.length === 0) {
-    throw new Error("Aucun serveur ICE reçu de la fonction TURN.");
-  }
-
+  const data = JSON.parse(text);
+  const servers = Array.isArray(data) ? data : (data.iceServers || data.ice_servers || []);
+  if (!servers.length) throw new Error("Aucun serveur TURN/ICE reçu.");
   return servers;
 }
 
 async function setupPeer() {
-  if (peer) {
-    peer.close();
-    peer = null;
-  }
+  if (peer) peer.close();
 
-  setStatus("Chargement des serveurs de connexion…");
+  peer = new RTCPeerConnection({ iceServers: await getIceServers() });
+  remoteReady = false;
+  seenCandidates = new Set();
+  pendingCandidates = [];
 
-  const iceServers = await getIceServers();
-
-  peer = new RTCPeerConnection({
-    iceServers,
-    iceCandidatePoolSize: 4
-  });
-
-  peer.onicecandidate = async (event) => {
-    if (!event.candidate || !sessionId || !sessionCode) return;
-
+  peer.onicecandidate = async event => {
+    if (!event.candidate) return;
     try {
-      await supabaseRpc("ajouter_candidat_ice", {
+      await rpc("ajouter_candidat_ice", {
         p_id: sessionId,
         p_code: sessionCode,
         p_candidat: {
-          role: role,
+          role,
           candidate: event.candidate.toJSON()
         }
       });
-    } catch (error) {
-      console.error("Envoi du candidat ICE :", error);
+    } catch (e) {
+      console.error("ICE :", e);
     }
   };
 
   peer.onconnectionstatechange = () => {
-    const state = peer ? peer.connectionState : "closed";
-    setStatus("État de la connexion : " + state);
+    if (peer) status("Connexion : " + peer.connectionState);
   };
 
-  peer.oniceconnectionstatechange = () => {
-    if (!peer) return;
-    console.log("ICE :", peer.iceConnectionState);
-  };
-
-  peer.ontrack = (event) => {
+  peer.ontrack = event => {
     $("remoteVideo").srcObject = event.streams[0];
     $("remoteVideo").play().catch(() => {});
-    setStatus("Écran reçu. La connexion est établie.");
+    status("Écran reçu.");
   };
 
   if (role === "share" && localStream) {
-    localStream.getTracks().forEach(track => {
-      peer.addTrack(track, localStream);
-    });
+    localStream.getTracks().forEach(track => peer.addTrack(track, localStream));
   }
 
   if (role === "view") {
@@ -383,292 +204,193 @@ async function setupPeer() {
   }
 }
 
-async function addRemoteCandidates(session) {
-  if (!peer || !session) return;
+async function readSession() {
+  return unwrap(await rpc("lire_session_partage", {
+    p_id: sessionId, p_code: sessionCode
+  }));
+}
 
-  let candidates = session.ice_candidates;
-
-  if (typeof candidates === "string") {
-    try { candidates = JSON.parse(candidates); }
-    catch { candidates = []; }
+function parseField(session, key) {
+  let value = session && session[key];
+  if (typeof value === "string") {
+    try { value = JSON.parse(value); } catch {}
   }
+  return value;
+}
 
-  if (!Array.isArray(candidates)) return;
+async function receiveCandidates(session) {
+  let items = parseField(session, "ice_candidates");
+  if (!Array.isArray(items) || !peer) return;
 
-  for (const item of candidates) {
-    if (!item || !item.role || !item.candidate) continue;
-    if (item.role === role) continue;
-
+  for (const item of items) {
+    if (!item || !item.role || !item.candidate || item.role === role) continue;
     const key = JSON.stringify(item);
     if (seenCandidates.has(key)) continue;
     seenCandidates.add(key);
 
     const candidate = new RTCIceCandidate(item.candidate);
-
-    if (!remoteDescriptionReady) {
+    if (!remoteReady) {
       pendingCandidates.push(candidate);
-      continue;
-    }
-
-    try {
-      await peer.addIceCandidate(candidate);
-    } catch (error) {
-      console.warn("Candidat ICE ignoré :", error);
+    } else {
+      try { await peer.addIceCandidate(candidate); }
+      catch (e) { console.warn(e); }
     }
   }
 }
 
-async function flushPendingCandidates() {
-  if (!peer || !remoteDescriptionReady) return;
-
-  const list = pendingCandidates;
+async function flushCandidates() {
+  for (const candidate of pendingCandidates) {
+    try { await peer.addIceCandidate(candidate); }
+    catch (e) { console.warn(e); }
+  }
   pendingCandidates = [];
-
-  for (const candidate of list) {
-    try {
-      await peer.addIceCandidate(candidate);
-    } catch (error) {
-      console.warn("Candidat en attente ignoré :", error);
-    }
-  }
 }
 
-async function readSession() {
-  const result = await supabaseRpc("lire_session_partage", {
-    p_id: sessionId,
-    p_code: sessionCode
-  });
-
-  return unwrap(result);
-}
-
-function getField(session, key) {
-  if (!session) return null;
-  let value = session[key];
-
-  if (typeof value === "string" &&
-      (key === "offer" || key === "answer" || key === "ice_candidates")) {
-    try { value = JSON.parse(value); }
-    catch {}
-  }
-
-  return value;
-}
-
-async function startShare() {
-  $("startShareBtn").disabled = true;
+async function startSharing() {
+  $("startShare").disabled = true;
 
   try {
-    if (!navigator.mediaDevices ||
-        !navigator.mediaDevices.getDisplayMedia) {
-      throw new Error(
-        "Ce navigateur ne permet pas le partage d'écran. Essaie un navigateur compatible sur un ordinateur."
-      );
+    if (!navigator.mediaDevices?.getDisplayMedia) {
+      throw new Error("Ce navigateur ne prend pas en charge le partage d'écran. Essaie depuis un ordinateur avec un navigateur compatible.");
     }
 
-    setStatus("Demande d'autorisation de partage d'écran…");
-
+    status("Demande d'autorisation…");
     localStream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-      audio: true
+      video: true, audio: true
     });
 
     $("localVideo").srcObject = localStream;
-    $("localVideo").play().catch(() => {});
-
-    localStream.getVideoTracks()[0].addEventListener("ended", () => {
-      stopShare();
-    });
-
     await setupPeer();
-
-    setStatus("Préparation de l'offre de connexion…");
-    makingOffer = true;
 
     const offer = await peer.createOffer();
     await peer.setLocalDescription(offer);
 
-    await supabaseRpc("enregistrer_offre_partage", {
+    await rpc("enregistrer_offre_partage", {
       p_id: sessionId,
       p_code: sessionCode,
       p_offer: peer.localDescription.toJSON()
     });
 
-    makingOffer = false;
-    startPolling();
+    status("Partage lancé. Attends la connexion du spectateur.");
+    beginPolling();
 
-    setStatus("Partage lancé. Ouvre le lien de visionnage sur l'autre appareil.");
-  } catch (error) {
-    makingOffer = false;
-    setStatus("Erreur de partage : " + error.message, true);
-    $("startShareBtn").disabled = false;
+    localStream.getVideoTracks()[0].addEventListener("ended", stopSharing);
+  } catch (e) {
+    status("Impossible de démarrer : " + e.message, true);
+    $("startShare").disabled = false;
   }
 }
 
 async function connectViewer() {
+  if (busy) return;
+  busy = true;
   $("connectBtn").disabled = true;
 
   try {
     await setupPeer();
-    startPolling();
-    setStatus("Recherche de l'écran partagé…");
-
-    await checkForOffer();
-  } catch (error) {
-    setStatus("Erreur de connexion : " + error.message, true);
+    beginPolling();
+    await pollSession();
+  } catch (e) {
+    status("Connexion impossible : " + e.message, true);
     $("connectBtn").disabled = false;
+  } finally {
+    busy = false;
   }
 }
 
-async function checkForOffer() {
-  if (role !== "view" || !peer || processingAnswer) return;
-
+async function pollSession() {
+  if (!peer) return;
   const session = await readSession();
-  await addRemoteCandidates(session);
+  if (!session) return;
 
-  const offer = getField(session, "offer");
-  const answer = getField(session, "answer");
-
-  if (offer && !peer.currentRemoteDescription && !processingAnswer) {
-    processingAnswer = true;
-
-    try {
+  if (role === "view") {
+    const offer = parseField(session, "offer");
+    if (offer && !peer.currentRemoteDescription) {
       await peer.setRemoteDescription(new RTCSessionDescription(offer));
-      remoteDescriptionReady = true;
-      await flushPendingCandidates();
+      remoteReady = true;
+      await flushCandidates();
 
-      const answerDescription = await peer.createAnswer();
-      await peer.setLocalDescription(answerDescription);
-
-      await supabaseRpc("enregistrer_reponse_partage", {
+      const answer = await peer.createAnswer();
+      await peer.setLocalDescription(answer);
+      await rpc("enregistrer_reponse_partage", {
         p_id: sessionId,
         p_code: sessionCode,
         p_answer: peer.localDescription.toJSON()
       });
-
-      setStatus("Réponse envoyée. Connexion en cours…");
-    } finally {
-      processingAnswer = false;
+    }
+  } else {
+    const answer = parseField(session, "answer");
+    if (answer && !peer.currentRemoteDescription) {
+      await peer.setRemoteDescription(new RTCSessionDescription(answer));
+      remoteReady = true;
+      await flushCandidates();
     }
   }
 
-  if (answer && role === "share" && peer && !peer.currentRemoteDescription) {
-    await peer.setRemoteDescription(new RTCSessionDescription(answer));
-    remoteDescriptionReady = true;
-    await flushPendingCandidates();
-  }
+  await receiveCandidates(session);
 }
 
-function startPolling() {
+function beginPolling() {
   if (pollingTimer) clearInterval(pollingTimer);
-
-  pollingTimer = setInterval(async () => {
-    try {
-      if (!peer) return;
-
-      const session = await readSession();
-
-      if (role === "view") {
-        const offer = getField(session, "offer");
-
-        if (offer && !peer.currentRemoteDescription) {
-          await checkForOffer();
-        } else {
-          await addRemoteCandidates(session);
-        }
-      } else {
-        const answer = getField(session, "answer");
-
-        if (answer && !peer.currentRemoteDescription) {
-          await peer.setRemoteDescription(new RTCSessionDescription(answer));
-          remoteDescriptionReady = true;
-          await flushPendingCandidates();
-        }
-
-        await addRemoteCandidates(session);
-      }
-    } catch (error) {
-      console.error("Actualisation de la session :", error);
-    }
+  pollingTimer = setInterval(() => {
+    pollSession().catch(e => console.warn("Actualisation :", e));
   }, 2000);
+  pollSession().catch(e => console.warn(e));
 }
 
-function stopShare() {
+function stopSharing() {
   if (localStream) {
     localStream.getTracks().forEach(track => track.stop());
     localStream = null;
   }
-
   $("localVideo").srcObject = null;
-
-  if (peer) {
-    peer.close();
-    peer = null;
-  }
-
-  if (pollingTimer) {
-    clearInterval(pollingTimer);
-    pollingTimer = null;
-  }
-
-  $("startShareBtn").disabled = false;
-  setStatus("Partage arrêté.");
+  if (peer) peer.close();
+  peer = null;
+  if (pollingTimer) clearInterval(pollingTimer);
+  pollingTimer = null;
+  $("startShare").disabled = false;
+  status("Partage arrêté.");
 }
 
-function openSessionFromUrl(urlText) {
+function openSession(href) {
   try {
-    const url = new URL(urlText);
-    const params = new URLSearchParams(url.hash.replace(/^#/, ""));
+    const url = new URL(href);
+    const params = new URLSearchParams(url.hash.slice(1));
+    const nextRole = params.get("role");
+    const id = params.get("id");
+    const code = params.get("code");
 
-    const newRole = params.get("role");
-    const newId = params.get("id");
-    const newCode = params.get("code");
-
-    if (!["share", "view"].includes(newRole) || !newId || !newCode) {
-      throw new Error("Le lien ne contient pas les informations de session attendues.");
+    if (!["share", "view"].includes(nextRole) || !id || !code) {
+      throw new Error("Lien de session incomplet.");
     }
 
-    sessionId = newId;
-    sessionCode = newCode;
-    seenCandidates = new Set();
-    pendingCandidates = [];
-    remoteDescriptionReady = false;
+    sessionId = id;
+    sessionCode = code;
+    role = nextRole;
 
-    showRole(newRole);
-    setStatus("Session chargée. Tu peux continuer.");
+    $("home").classList.add("hidden");
+    $("sharePanel").classList.toggle("hidden", role !== "share");
+    $("viewPanel").classList.toggle("hidden", role !== "view");
 
-    if (newRole === "view") {
-      connectViewer();
+    if (role === "share") {
+      status("Prêt. Appuie sur « Autoriser et partager mon écran ».");
+    } else {
+      status("Lien de visionnage ouvert. Connecte-toi au partage.");
     }
-  } catch (error) {
-    setStatus("Lien invalide : " + error.message, true);
+  } catch (e) {
+    status("Lien invalide : " + e.message, true);
   }
 }
 
 $("createBtn").addEventListener("click", createSession);
-$("copyShareBtn").addEventListener("click", () => copyText($("shareLink").textContent));
-$("copyViewBtn").addEventListener("click", () => copyText($("viewLink").textContent));
-$("startShareBtn").addEventListener("click", startShare);
-$("stopShareBtn").addEventListener("click", stopShare);
+$("copyShare").addEventListener("click", () => copyText($("shareLink").textContent));
+$("copyView").addEventListener("click", () => copyText($("viewLink").textContent));
+$("startShare").addEventListener("click", startSharing);
+$("stopShare").addEventListener("click", stopSharing);
 $("connectBtn").addEventListener("click", connectViewer);
 
-$("openSessionBtn").addEventListener("click", () => {
-  openSessionFromUrl($("sessionUrl").value.trim());
-});
-
-window.addEventListener("hashchange", () => {
-  const info = readHash();
-
-  if (info.role && info.id && info.code) {
-    openSessionFromUrl(window.location.href);
-  }
-});
-
-const initial = readHash();
-
-if (initial.role && initial.id && initial.code) {
-  openSessionFromUrl(window.location.href);
-}
+const initialParams = new URLSearchParams(location.hash.slice(1));
+if (initialParams.has("role")) openSession(location.href);
 </script>
 </body>
 </html>
