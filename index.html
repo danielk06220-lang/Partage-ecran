@@ -147,11 +147,13 @@
       }
 
       setStatus("Réponse de Supabase : " + text.slice(0, 500));
+    
     } catch (error) {
       setStatus(
-        "Connexion impossible. Vérifie Internet et la configuration Supabase."
+        "Erreur de connexion : " + error.message
       );
     }
+
   }
 
   async function startSharing() {
